@@ -1,0 +1,125 @@
+{
+  "menu": [
+    {
+      "name": "Dashboards",
+      "badge": "",
+      "badgeClass": "badge badge-light-warning rounded-pill ms-auto me-1",
+      "icon": "home",
+      "slug": "",
+      "permission": "dashboard",
+      "submenu": [
+        {
+          "url": "/",
+          "name": "Analytics",
+          "icon": "circle",
+          "slug": "dashboard-analytics",
+          "permission": "dashboard"
+        }
+      ]
+    }, 
+    {
+      "name": "Shop Management",
+      "icon": "plus-square",
+      "slug": "",
+      "permission": "claim",
+      "submenu": [
+       
+    {
+      "url": "claim/",
+          "name": "Claims",
+          "icon": "circle",
+          "permission": "claim",
+          "slug": "claim.index"
+    },
+    {
+      "url": "claim/closed",
+          "name": "Closed Claims",
+          "icon": "circle",
+          "permission": "claim",
+          "slug": "claim.closed.claim"
+    }
+    ]
+    },
+    {
+      "name": "QA Management",
+      "icon": "plus-square",
+      "slug": "",
+      "permission": "QA",
+      "submenu": [
+    {
+      "url": "qa/",
+          "name": "Claims",
+          "icon": "circle",
+          "permission": "QA",
+          "slug": "qa.index"
+    }
+  ]
+},   
+{
+  "name": "Distributions",
+  "icon": "plus-square",
+  "slug": "",
+  "permission": "Distribution",
+  "submenu": [ 
+    {
+      "url": "distribution/",
+          "name": "Claims",
+          "icon": "circle",
+          "permission": "Distribution",
+          "slug": "distribution.index"
+    },
+    {
+      "url": "distribution/repairs",
+          "name": "Repairs",
+          "icon": "circle",
+          "permission": "Distribution",
+          "slug": "distribution.repairs"
+    }
+  ]
+},
+    {
+      "name": "Roles & Permission",
+      "icon": "shield",
+      "slug": "",
+      "permission": "roles_read",
+      "submenu": [
+        {
+          "url": "roles",
+          "name": "Roles",
+          "icon": "circle",
+          "permission": "roles_read",
+          "slug": "roles"
+        },
+        {
+          "url": "permissions",
+          "name": "Permission",
+          "icon": "circle",
+          "permission": "roles_read",
+          "slug": "permission"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "icon": "settings",
+      "slug": "",
+      "permission": "hms-settings",
+      "submenu": [
+        {
+          "url": "shop/",
+              "name": "Shop",
+              "icon": "circle",
+              "permission": "shop",
+              "slug": "shop.index"
+        },
+        {
+          "url": "user/list",
+              "name": "User",
+              "icon": "circle",
+              "permission": "private-user",
+              "slug": "user.index"
+        }
+      ]
+    }
+  ]
+}
