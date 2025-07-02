@@ -1,13 +1,4 @@
 @extends('layouts/app')
-@section('vendor-style')
-  {{-- Vendor Css files --}}
-  <link rel="stylesheet" href="{{ asset('vendors/css/forms/select/select2.min.css') }}">
-@endsection
-
-@section('page-style')
-  {{-- Page Css files --}}
-  <link rel="stylesheet" href="{{ asset('css/base/plugins/forms/form-validation.css') }}">
-@endsection
 @section('content')
 <section class="bs-validation mt-4">
   <div class="row">
@@ -24,6 +15,7 @@
             <div class="row">
             <div class="mb-1 col-md-12">
                 <label class="form-label" for="article_number">Article Number</label>
+				<small class="text-danger">Please Enter Article Number In The Numeric Format</small>
                 <input type="text" name="article_number" id="article_number" class="form-control" value="{{ $branch['article_number'] ?? ''}}" placeholder="Enter Article Number" required />
             </div>
             <div class="mb-1 col-md-12">
@@ -32,11 +24,13 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="size">Size</label>
-                <input type="number" name="size" id="size" min="39" max="46" class="form-control" placeholder="Enter Shoe Size" value="{{ $branch['size'] ?? ''}}" required />
+				<small class="text-danger">Please Enter Shoe Size In Between 31 To 46</small>
+                <input type="number" name="size" id="size" min="31" max="46" class="form-control" placeholder="Enter Shoe Size" value="{{ $branch['size'] ?? ''}}" required />
               </div>
             <div class="mb-1 col-md-12">
-              <label class="form-label" for="name">Name</label>
-              <input type="text" name="name" id="name" class="form-control" value="{{ $branch['name'] ?? ''}}" placeholder="john" required />
+              <label class="form-label" for="name">Article Name</label>
+			  <small class="text-danger">Please Enter Article Name In This Given Format (XX-XX-XXXX)</small>
+              <input type="text" name="name" id="name" class="form-control" value="{{ $branch['name'] ?? ''}}" minlength="5" placeholder="Enter Full Article Name Like This XX-XX-XXXX" pattern="[A-Z]{2}-[A-Z]{2}-\d{4}" required />
             </div>
             <div class="mb-1 col-md-12">
                 <label class="form-label" for="invoice">Invoice</label>
@@ -44,7 +38,8 @@
             </div>
             <div class="mb-1 col-md-12">
                 <label class="form-label" for="purchase_date">Purchase Date</label>
-                <input type="date" name="purchase_date" id="purchase_date" class="form-control" value="{{ $branch['purchase_date'] ?? ''}}" placeholder="Enter Purchase Date" required />
+				<small class="text-danger">Please Enter Purchase Date In This Given Format (XX/XX/XXXX)</small>
+                <input type="date" name="purchase_date" id="purchase_date" class="form-control" pattern="\d{2}/\d{2}/\d{4}" value="{{ $branch['purchase_date'] ?? ''}}" placeholder="Enter Purchase Date" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="article_price">Article Price</label>
@@ -68,11 +63,15 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="ptcl_number">Ptcl</label>
-                <input type="text" name="ptcl_number" id="ptcl_number" minlength="11" maxlength="11" class="form-control" value="{{ $branch['ptcl_number'] ?? ''}}" placeholder="042 31234567" />
+                <input type="text" name="ptcl_number" id="ptcl_number" class="form-control" value="{{ $branch['ptcl_number'] ?? ''}}" placeholder="042 31234567" />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="cell">Cell</label>
                 <input type="number" name="cell" id="cell" minlength="11" maxlength="11" class="form-control" value="{{ $branch['cell'] ?? ''}}" placeholder="(472) 765-3654" />
+              </div>
+			  <div class="mb-1 col-md-12">
+                <label class="form-label" for="shop_manager">Shop Manager</label>
+                <input type="text" name="shop_manager" id="shop_manager" class="form-control" value="{{ $branch['shop_manager'] ?? ''}}" placeholder="Enter Shop Manager Name" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="shop_id">Shops</label>
@@ -105,7 +104,6 @@
           </div>
               <div class="col-12">
                 <button type="submit" class="btn btn-primary" name="update" value="Update">Update</button>
-                <a type="button" href="#" id="back_button" class="btn btn-secondary">Cancel</a>
               </div>
             </div>
           </form>
@@ -114,17 +112,5 @@
     </div>
   </div>
 </section>
-
-@endsection
-@section('vendor-script')
-  <!-- vendor files -->
-  <script src="{{ asset('vendors/js/forms/select/select2.full.min.js') }}"></script>
-  <script src="{{ asset('vendors/js/forms/validation/jquery.validate.min.js') }}"></script>
-  <script src="{{ asset('vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-@endsection
-
-@section('page-script')
-  <!-- Page js files -->
-  <script src="{{ asset('js/scripts/claim/add-claim.js') }}"></script>
 
 @endsection

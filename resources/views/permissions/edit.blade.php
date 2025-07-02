@@ -41,7 +41,6 @@
 
               <div class="col-12">
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <a type="button" href="#" id="back_button" class="btn btn-secondary">Cancel</a>
               </div>
             </div>
           </form>

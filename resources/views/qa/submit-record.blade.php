@@ -13,8 +13,8 @@
         @method('PUT')
           <input type="hidden" id="claimId" name="claimId" value="{{$claim->id}}" />
           <div class="form-group">
-            <label for="name" class="col-form-label">Name:</label>
-            <input type="text" name="claimName" class="form-control" id="claimName" value="{{$claim->name}}">
+            <label for="name" class="col-form-label">Aritcle Name:</label>
+            <input type="text" name="claimName" class="form-control" id="claimName" value="{{$claim->name}}" disabled>
           </div>
           <div class="form-group">
             <label for="message" class="col-form-label">Message:</label>

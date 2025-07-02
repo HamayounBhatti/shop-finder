@@ -6,7 +6,7 @@
       <script>
         document.write(new Date().getFullYear())
       </script><a class="ms-25" href="https://xconsol.com/"
-        target="_blank">X-consol</a>,
+        target="_blank"> X-consol</a>,
       <span class="d-none d-sm-inline-block">All rights Reserved</span>
     </span>
     <span class="float-md-end d-none d-md-block">

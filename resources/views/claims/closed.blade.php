@@ -13,13 +13,21 @@
     <div class="card-datatable table-responsive pt-0">
     <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
     <h1 class="mb-0 ml-3">Shop Closed Claims</h1>
+	    <div class="d-flex mr-2" style="gap: 10px; margin-left: auto;">
+      <small class="search-by-id text-danger"></small>
+        <input type="number" id="search-id" class="form-control" placeholder="Search by ID">
+        <button class="btn btn-secondary" id="search-btn">Search</button>
+    </div>
 </div>
         <table id="claim-table" class="display table table-bordered">
         <thead>
             <tr>
+			<th>Claim ID</th>
             <th>Article No</th>
-            <th>Name</th>
+            <th>Article Name</th>
+			<th>Shop Manager Name</th>
             <th>Invoice</th>
+			<th>Claim Date</th>
             <th>Purchase Date</th>
             <th>Article Price</th>
             <th>Period</th>
@@ -30,6 +38,7 @@
             <th>Cell</th>
             <th>Shop Name</th>
             <th>Status</th>
+			<th>Closed</th>
             <th>Actions</th>
             </tr>
         </thead>
@@ -37,9 +46,12 @@
         <tbody>
                 @foreach ($claims as $claim)
                     <tr>
+						<td>{{$claim->id}}</td>
                         <td>{{ $claim->article_number }}</td>
                         <td>{{ $claim->name }}</td>
+						<td>{{ $claim->shop_manager == Null ? 'N/A' : $claim->shop_manager }}</td>
                         <td>{{ $claim->invoice }}</td>
+						<td>{{ $claim->created_at->format('Y-m-d') }}</td>
                         <td>{{ $claim->purchase_date }}</td>
                         <td>{{ $claim->article_price }}</td>
                         <td>{{ $claim->period }}</td>
@@ -49,14 +61,15 @@
                         <td>{{ $claim->ptcl_number }}</td>
                         <td>{{ $claim->cell }}</td>
                         <td>{{ $claim->shops->name }}</td>
-                        <td>{{ $claim->status == 2 ? "Rejected" : "Closed"   }}</td>
+                        <td>{!! status_label($claim->status) !!}</td>
+						<td>{{ $claim->is_closed == 0 ? 'No' :'Yes'}}</td>
                         <td>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Actions
                                 </button>
                                 <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{route('claim.claim.settlement.form',$claim->id)}}">View</a></li>
+                                <li><a class="dropdown-item" href="{{route('claim.claim.settlement.form',$claim->id)}}">Report</a></li>
                                 </ul>
                             </div>
                         </td>
@@ -71,36 +84,74 @@
                   </td>                
                 </tr>
               </tbody>
+
               @endif
         </table>
+		    {{ $claims->links() }}
     </div>
 </div>
+			  <br>
+			  <br>
+			  <br>
   <!-- list and filter end -->
 </section>
-@endsection
+<script>
+ function loadSingleUser(claimId) {
 
-@section('vendor-script')
-    <script src="{{ asset('vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.bootstrap5.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/responsive.bootstrap5.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/datatables.buttons.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/jszip.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.rowGroup.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/forms/validation/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-@endsection
-@section('page-script')
-  {{-- Page js files --}}
-  <script>
-    $(document).ready(function () {
-      $('#claims-table').DataTable(); // Initialize DataTable
+        $.ajax({
+            url: `/claim/get-claim-by-id/${claimId}`,
+            method: "GET",
+            success: function(claim) {
+				let date = new Date(claim.created_at);
+				let formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                let tableBody = `
+                    <tr>
+                        <td>${claim.id}</td>
+                        <td>${claim.article_number}</td>
+                        <td>${claim.name}</td>
+						<td>${claim.shop_manager == Null ? 'N/A' : $claim->shop_mamager }</td>
+                        <td>${claim.invoice}</td>
+						<td>${formattedDate}</td>
+                        <td>${claim.purchase_date}</td>
+                        <td>${claim.article_price}</td>
+                        <td>${claim.period}</td>
+                        <td>${claim.customer_name}</td>
+                        <td>${claim.customer_address}</td>
+                        <td>${claim.customer_email}</td>
+                        <td>${claim.ptcl_number}</td>
+                        <td>${claim.cell}</td>
+                        <td>${claim.shops.name}</td>
+                        <td>${ claim.status == 0 ? 'Pending' :(claim.status == 1 ? 'Submitted':(claim.status == 2 ? 'Rejected' : (claim.status == 3 ? 'Repair':(claim.status ==4 ? 'Replacement':(claim.status == 5 ? 'Received': (claim.status == 6 ? Locally Closed': '')))))) }</td>
+                        <td>${claim.is_closed == 0 ? 'No' : 'Yes'}</td>
+						<td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/claim/claim-settlement-form/${claim.id}">Report</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                $("#claim-table tbody").html(tableBody);
+            },
+            error: function(xhr) {
+                console.error("Claim not found", xhr.responseText);
+                $("small.search-by-id").html(`Claim not found`);
+            }
+        });
+    }
+    $(document).ready(function() {
+        $("#search-btn").on("click", function() {
+          console.log('ok');
+          
+            let searchId = $("#search-id").val();
+            if (searchId) {
+                loadSingleUser(searchId);
+            }
+        });
     });
-  </script>
-  <script src="{{ asset('js/scripts/claim/closed-claim-listing.js') }}"></script>
-  <script src="{{ asset('js/scripts/claim/claim-record-modal.js') }}"></script>
+</script>
 @endsection

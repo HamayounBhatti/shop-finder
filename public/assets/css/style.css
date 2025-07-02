@@ -56,7 +56,12 @@ select{
 }
 
 .sidebar a:hover {
+	color: #fff;
     background-color: #575757;
+}
+.sidebar-links.active {
+    color: #fff;
+    background-color: #575757; /* Blue background or any color you prefer */
 }
 
 /* Main content styling */

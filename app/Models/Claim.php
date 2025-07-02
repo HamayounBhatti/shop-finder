@@ -36,6 +36,7 @@ class Claim extends Model
         'receiving_remarks',
         'received_date_and_time',
         'invoice_image',
+		'shop_manager',	
     ];
 
     public function shops()

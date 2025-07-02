@@ -37,14 +37,20 @@
         <form>
             <table>
                 <tr>
-                    <th colspan="2">Serial No:</th>
-                    <td colspan="2">0{{$claim[0]->id}}</td>
+                    <th colspan="2">Claim ID:</th>
+                    <td colspan="2">{{$claim[0]->id}}</td>
                     <th>Date:</th>
                     <td>{{ \Carbon\Carbon::now()->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th colspan="3">Shop Name & Address:</th>
                     <td colspan="3">{{$claim[0]->shops->name}} & {{$claim[0]->shops->address}}</td>
+                </tr>
+				<tr>
+                    <th colspan="2">Article Name:</th>
+                    <td colspan="2">{{$claim[0]->name}}</td>
+                    <th>Shop Manager:</th>
+                    <td>{{ $claim[0]->shop_manager }}</td>
                 </tr>
                 <tr>
                     <th>Claim Receipt #:</th>

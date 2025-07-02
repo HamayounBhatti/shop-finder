@@ -40,7 +40,7 @@ class RoleController extends Controller
     {
 
         $roles = Role::withCount('users')
-            ->where('roles.hms_id', Auth::user()->hms_id)->get();
+            ->where('roles.hms_id', Auth::user()->hms_id)->paginate(5);
         $pageConfigs = ['pageHeader' => false,];
         return view('roles.index', [
             'roles' => $roles,

@@ -24,6 +24,7 @@
           @endforeach
         </tbody>
       </table>
+	      {{ $permissions->links() }}
     </div>
   </div>
   <br>
@@ -31,6 +32,4 @@
   <br>
   <!-- list and filter end -->
 </section>
-@include('shop/modal/update-status-modal')
-<script src="{{ asset('js/scripts/shop/update-status-modal.js') }}"></script>
 @endsection

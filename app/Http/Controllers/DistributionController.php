@@ -16,22 +16,27 @@ class DistributionController extends Controller
 {
     public function index()
     {
-        $claims = Claim::where('status',4)
-        ->where('is_closed',0)
+        $claims =Claim::where('status','!=',5)
+							->where('status','!=',0)
+							->where('status','!=',1)
+							  ->where('status','!=','3')
+							  ->where('status','!=','6')
         ->whereHas('shops', function($query){
             $query->where('is_active', 1);
         })
-        ->with('shops')->get();
+        ->with('shops')->paginate(5);
         return view('distribution.index',compact('claims'));
     }
     public function repair()
     {
-        $claims = Claim::where('status',3)
-        ->where('is_closed',0)
+        $claims = Claim::where('status','!=',5)
+							->where('status','!=',0)
+							->where('status','!=',1)
+							  ->where('status','!=','4')
         ->whereHas('shops', function($query){
             $query->where('is_active', 1);
         })
-        ->with('shops')->get();
+        ->with('shops')->paginate(5);
         return view('distribution.repair',compact('claims'));
     }
 

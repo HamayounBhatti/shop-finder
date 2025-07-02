@@ -13,8 +13,8 @@
           @method('PUT')
           <input type="hidden" id="receivedId" name="receivedId" value="{{$claim->id}}" />
           <div class="form-group">
-            <label for="name" class="col-form-label">Name:</label>
-            <input type="text" name="receivedName" class="form-control" id="receivedName" value="{{$claim->name}}">
+            <label for="name" class="col-form-label">Aritcle Name:</label>
+            <input type="text" name="receivedName" class="form-control" id="receivedName" value="{{$claim->name}}" disabled>
           </div>
           <div class="form-group">
             <label for="received_remarks" class="col-form-label">Received Remarks:</label>
@@ -22,7 +22,7 @@
           </div>
           <div class="form-group">
             <label for="received_date_and_time" class="col-form-label">Received Date And Time</label>
-            <input type="dateTime" name="receiveddateandtime" class="form-control" id="receiveddateandtime" value="{{ \Carbon\Carbon::now()}}" disabled>
+            <input type="text" name="receiveddateandtime" class="form-control" id="receiveddateandtime" value="{{ \Carbon\Carbon::now()}}" disabled>
             <input type="hidden" id="received_date_and_time" name="received_date_and_time" value="{{ \Carbon\Carbon::now()}}" />
           </div>
           <div class="col-sm-10">

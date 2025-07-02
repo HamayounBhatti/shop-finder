@@ -24,6 +24,7 @@
               @csrf
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="article_number">Article Number</label>
+				<small class="text-danger">Please Enter Article Number In The Numeric Format</small>
                 <input type="text" name="article_number" id="article_number" class="form-control" placeholder="Enter Article Number" required />
               </div>
               <div class="mb-1 col-md-12">
@@ -32,11 +33,13 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="size">Size</label>
-                <input type="number" name="size" id="size" min="39" max="46" class="form-control" placeholder="Enter Shoe Size" required />
+				<small class="text-danger">Please Enter Shoe Size In Between 31 To 46</small>
+                <input type="number" name="size" id="size" min="31" max="46" class="form-control" placeholder="Enter Shoe Size" required />
               </div>
               <div class="mb-1 col-md-12">
-                <label class="form-label" for="name">Name</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="Enter Name" required />
+                <label class="form-label" for="name">Article Name</label>
+				<small class="text-danger">Please Enter Article Name In This Given Format (XX-XX-XXXX)</small>
+                <input type="text" name="name" id="name" class="form-control" minlength="5" placeholder="Enter Full Article Name" pattern="[A-Z]{2}-[A-Z]{2}-\d{4}" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="invoice">Invoice</label>
@@ -44,7 +47,8 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="purchase_date">Purchase Date</label>
-                <input type="date" name="purchase_date" id="purchase_date" class="form-control" placeholder="Enter Purchase Date" required />
+				<small class="text-danger">Please Select Purchase Date In This Given Format (XX/XX/XXXX)</small>
+                <input type="date" name="purchase_date" id="purchase_date" class="form-control" pattern="\d{2}/\d{2}/\d{4}" placeholder="Enter Purchase Date" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="article_price">Article Price</label>
@@ -68,11 +72,15 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="ptcl_number">Ptcl</label>
-                <input type="text" name="ptcl_number" id="ptcl_number" minlength="11" maxlength="11" class="form-control" placeholder="XXX-XXXXXXX" />
+                <input type="number" name="ptcl_number" id="ptcl_number" class="form-control" placeholder="XXX-XXXXXXX" />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="cell">Cell</label>
                 <input type="number" name="cell" id="cell" class="form-control" minlength="11" maxlength="11" placeholder="03XX-XXXXXXX" />
+              </div>
+			  <div class="mb-1 col-md-12">
+                <label class="form-label" for="shop_manager">Shop Manager</label>
+                <input type="text" name="shop_manager" id="shop_manager" class="form-control" placeholder="Enter Shop Manager Name" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="shop_id">Shop</label>
@@ -114,7 +122,6 @@
           <div class="mb-1 col-md-12">
               <div class="col-12">
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <a type="button" href="#" id="back_button" class="btn btn-secondary">Cancel</a>
               </div>
             </div>
           </form>

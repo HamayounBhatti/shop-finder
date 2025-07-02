@@ -20,7 +20,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('role')->with('shop')->get();
+        $users = User::with('role')->with('shop')->paginate(5);
         return view('user.index',compact('users'));
     }
 
@@ -65,7 +65,6 @@ class UserController extends Controller
                 'role_id' => $request->role_id,
                 'shop_id' => $request->shop_id,
             ]);
-       
             if (!$createUser->id) {
                 DB::rollBack();
                 return response()->json($createUser);
@@ -77,7 +76,7 @@ class UserController extends Controller
             return redirect()->route('user.index');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('errors',$e);
+            return redirect()->back()->withErrors('An error occurred while creating the user. Please try again.')->withInput();
         }
     }
 
@@ -140,7 +139,9 @@ class UserController extends Controller
         $request->merge([
             'hms_id' => Auth::user()->hms_id,
         ]);
-
+            $request->merge([
+                'password' => Hash::make($request->password) // Hash the password before storing
+            ]);
         try {
             DB::beginTransaction();
             $user = User::find($request->id);
@@ -150,7 +151,9 @@ class UserController extends Controller
                 'name' => $request->name,
                 'username' => $request->user_name,
                 'email' => $request->email,
-                'shop_id' => $request->shop_id,          
+				'password' => $request->password,
+                'shop_id' => $request->shop_id,
+                'role_id' => $request->role_id,				
             ]);
 
             DB::commit();

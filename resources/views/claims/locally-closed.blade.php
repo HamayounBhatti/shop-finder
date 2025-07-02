@@ -5,10 +5,10 @@
     <div class="col-12">
       <div class="card" style="margin-bottom: 10%;">
         <div class="card-header">
-          <h4 class="card-title">Submit Claim<small>(Shop Side)</small></h4>
+          <h4 class="card-title">Locally Closed Claim<small>(Shop Side)</small></h4>
         </div>
         <div class="card-body">
-        <form action="{{route('claim.submitRecord')}}" method="POST" class="row">
+        <form action="{{route('claim.locallyClosedClaim')}}" method="POST" class="row">
           @csrf
           @method('PUT')
           <input type="hidden" id="claimId" name="claimId" value="{{$claim->id}}" />
@@ -17,7 +17,7 @@
             <input type="text" name="claimName" class="form-control" id="claimName" value="{{$claim->name}}" disabled>
           </div>
           <div class="form-group">
-            <label for="message" class="col-form-label">Nature Of Complaint</label>
+            <label for="message" class="col-form-label">Closing Remarks</label>
             <textarea class="form-control" name="message" id="message"></textarea>
           </div>
           <div class="col-sm-10">
@@ -26,7 +26,7 @@
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="status" id="gridRadios1" value="1" checked>
                   <label class="form-check-label" for="gridRadios1">
-                    Accepted
+                    Closed
                   </label>
                 </div>
               </div>

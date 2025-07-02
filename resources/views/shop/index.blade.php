@@ -47,6 +47,7 @@
           @endforeach
         </tbody>
       </table>
+	      {{ $shops->links() }}
     </div>
   </div>
   <br>
@@ -54,27 +55,4 @@
   <br>
   <!-- list and filter end -->
 </section>
-@include('shop/modal/update-status-modal')
-<script src="{{ asset('js/scripts/shop/update-status-modal.js') }}"></script>
 @endsection
-
-<!-- @section('vendor-script')
-    <script src="{{ asset('vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.bootstrap5.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/responsive.bootstrap5.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/datatables.buttons.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/jszip.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/tables/datatable/dataTables.rowGroup.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/forms/validation/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('vendors/js/extensions/sweetalert2.all.min.js') }}"></script>
-@endsection
-@section('page-script')
-  {{-- Page js files --}}
-  <script src="{{ asset('js/scripts/shop/shop-listing.js') }}"></script>
-
-@endsection -->

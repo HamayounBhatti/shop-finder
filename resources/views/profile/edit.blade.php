@@ -25,10 +25,6 @@
                 <label class="form-label" for="email">Email</label>
                 <input type="email" name="email" id="email" class="form-control" placeholder="Enter Email" value="{{ $branch['email'] ?? ''}}" />
               </div>
-              <div class="mb-1 col-md-12">
-                <label class="form-label" for="email">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Enter Password" required />
-              </div>
               <div class="col-12 mt-2">
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>

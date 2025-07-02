@@ -43,6 +43,7 @@
         </tbody>
         @endif
       </table>
+	      {{ $users->links() }}
     </div>
   </div>
   <br>

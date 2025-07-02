@@ -13,13 +13,11 @@ class QAController extends Controller
 {
     public function index()
     {
-        $claims=Claim::where('status',1)
-                        ->orWhere('status',5)
-                        ->where('is_closed',0)
+        $claims=Claim::where('status','!=',0)
                         ->whereHas('shops', function($query){
                             $query->where('is_active', 1);
                         })
-                        ->with('shops')->get();
+                        ->with('shops')->paginate(5);
         return view('qa.index',compact('claims'));
     }
     public function submitRecord(Request $request)

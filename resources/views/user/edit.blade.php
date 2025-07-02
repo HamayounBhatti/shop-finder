@@ -19,7 +19,7 @@
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="user_name">User Name</label>
-                <input type="text" name="user_name" id="user_name" class="form-control" placeholder="Enter User Name" value="{{ $branch['user_name'] ?? ''}}" required />
+                <input type="text" name="user_name" id="user_name" class="form-control" placeholder="Enter User Name" value="{{ $branch['username'] ?? ''}}" required />
               </div>
               <div class="mb-1 col-md-12">
                 <label class="form-label" for="email">Email</label>

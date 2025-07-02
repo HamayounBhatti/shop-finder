@@ -11,6 +11,7 @@ use App\Models\Image;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Shop;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -19,28 +20,28 @@ class ClaimController extends Controller
     public function index()
     {
         if(Auth::user()->role->name == 'Shop'){
-                $claims = Claim::where('status',0)
-                               ->where('is_closed',0)
+                $claims = Claim::where('status','!=',2)
+							   ->where('is_closed','!=','1')
                                ->where('shop_id',Auth::user()->shop_id)
                                ->whereHas('shops', function($query){
                                    $query->where('is_active', 1);
                                 })
-                               ->with('shops')->get();
+                               ->with('shops')->paginate(5);
                                
             }elseif(Auth::user()->role->name == 'Super Admin'){
-                $claims = Claim::where('status',0)
-                               ->where('is_closed',0)
+                $claims = Claim::where('status','!=',2)
+							   ->where('is_closed','!=','1')
                                ->whereHas('shops', function($query){
                                 $query->where('is_active', 1);
                                 })
-                               ->with('shops')->get();
+                               ->with('shops')->paginate(5);
             }else{
-                $claims = Claim::where('status',0)
-                ->where('is_closed',0)
-                ->whereHas('shops', function($query){
-                    $query->where('is_active', 1);
-                  })
-                ->with('shops')->get();
+                $claims = Claim::where('status','!=',2)
+							   ->where('is_closed','!=','1')
+							   ->whereHas('shops', function($query){
+								  $query->where('is_active', 1);
+							     })
+							   ->with('shops')->paginate(5);
             }
             $imageUrl = null;
         if(!$claims){
@@ -57,19 +58,19 @@ class ClaimController extends Controller
                            ->whereHas('shops', function($query){
                                $query->where('is_active', 1);
                             })
-                           ->with('shops')->get();
+                           ->with('shops')->paginate(5);
         }elseif(Auth::user()->role->name == 'Super Admin'){
             $claims = Claim::where('is_closed',1)
                            ->whereHas('shops', function($query){
                             $query->where('is_active', 1);
                             })
-                           ->with('shops')->get();
+                           ->with('shops')->paginate(5);
         }else{
             $claims = Claim::where('is_closed',1)
                            ->whereHas('shops', function($query){
                                 $query->where('is_active', 1);
                             })
-                            ->with('shops')->get();
+                            ->with('shops')->paginate(5);
         }
         return view('claims.closed',compact('claims'));
     }
@@ -99,104 +100,106 @@ class ClaimController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'article_number' => 'required|numeric',
-            'name' => 'required',
-            'invoice' => 'required|numeric',
-            'purchase_date' => 'required|date',
-            'article_price' => 'required',
-            'period' => 'required',
-            'customer_name' => 'required',
-            'customer_address' => 'required',
-            'customer_email' => 'required',
-            'ptcl_number' => 'required',
-            'cell' => 'required',
-            'shop_id' => 'required',
-            'invoice_image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'defect_image.*' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
-        ]);
-       
-        if ($validator->fails()) {
-            return redirect()->back()->with('errors',$validator->errors());
-        }
-     
-        if (!Auth::user() || !Auth::user()->hms_id) {
-            return redirect()->back()->with('errors','Please login again.');
-        }
-     
+{
+    $validator = Validator::make($request->all(), [
+        'article_number' => 'required|numeric',
+        'name' => 'required|string',
+        'invoice' => 'required|numeric',
+        'purchase_date' => 'required|date',
+        'article_price' => 'required|numeric',
+        'period' => 'required|string',
+        'customer_name' => 'required|string',
+        'customer_address' => 'required|string',
+        'customer_email' => 'required|email',
+        'ptcl_number' => 'required|string',
+        'cell' => 'required|string',
+        'shop_manager' => 'required|string',
+        'shop_id' => 'required|numeric',
+        'invoice_image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'defect_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+    ]);
+
+    // Add custom validation for purchase date
+    $validator->after(function ($validator) use ($request) {
         try {
-            DB::beginTransaction();
-            $roles= Role::where('hms_id', Auth::user()->hms_id)
+            $purchaseDate = Carbon::parse($request->purchase_date);
+            if ($purchaseDate->lt(Carbon::now()->subDays(31))) {
+                $validator->errors()->add('purchase_date', 'The Purchase Date of invoice must be within the last 30 days.');
+            }
+        } catch (\Exception $e) {
+            $validator->errors()->add('purchase_date', 'Invalid purchase date.');
+        }
+    });
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    if (!Auth::check() || !Auth::user()->hms_id) {
+        return redirect()->back()->withErrors(['auth' => 'Please login again.']);
+    }
+
+    try {
+        DB::beginTransaction();
+
+        $role = Role::where('hms_id', Auth::user()->hms_id)
             ->where('slug', 'shop')
             ->pluck('id')
             ->first();
 
-            if (!$roles) {
-                return redirect()->back()->with('errors','role not found.');
-            }
+        if (!$role) {
+            return redirect()->back()->withErrors(['role' => 'Shop role not found.']);
+        }
 
-            $request->merge([
-                'password' => Hash::make($request->password) // Hash the password before storing
-            ]);
-            $request->merge([
-                'hms_id' => Auth::user()->hms_id,
-            ]);
-            $imagePath = null;
+        $request->merge([
+            'hms_id' => Auth::user()->hms_id,
+        ]);
+
+        $invoiceImagePath = null;
         if ($request->hasFile('invoice_image')) {
-            // Store the image in the 'public' disk (you can change this to cloud storage)
-            $imagePath = $request->file('invoice_image')->store('images', 'public');
+            $invoiceImagePath = $request->file('invoice_image')->store('images', 'public');
         }
-       
 
-            $createClaim = Claim::create([
-                'hms_id' => $request->hms_id,
-                'article_number' => $request->article_number,
-                'name' => $request->name,
-                'invoice' => $request->invoice,
-                'purchase_date' => $request->purchase_date,
-                'article_price' => $request->article_price,
-                'period' => $request->period,
-                'customer_name' => $request->customer_name,
-                'customer_address' => $request->customer_address,
-                'customer_email' => $request->customer_email,
-                'ptcl_number' => $request->ptcl_number,
-                'cell' => $request->cell,
-                'shop_id' => $request->shop_id,
-                'proposed_status' => $request->proposed_status,
-                'color' => $request->color,
-                'size' => $request->size,
-                'invoice_image'=> $imagePath,
-            ]);
-            if ($request->hasFile('defect_image')) {
-                foreach ($request->file('defect_image') as $image) {
-                    $path= $image->store('images', 'public');
+        $claim = Claim::create([
+            'hms_id' => $request->hms_id,
+            'article_number' => $request->article_number,
+            'name' => $request->name,
+            'invoice' => $request->invoice,
+            'purchase_date' => $request->purchase_date,
+            'article_price' => $request->article_price,
+            'period' => $request->period,
+            'customer_name' => $request->customer_name,
+            'customer_address' => $request->customer_address,
+            'customer_email' => $request->customer_email,
+            'ptcl_number' => $request->ptcl_number,
+            'cell' => $request->cell,
+            'shop_manager' => $request->shop_manager,
+            'shop_id' => $request->shop_id,
+            'proposed_status' => $request->proposed_status,
+            'color' => $request->color,
+            'size' => $request->size,
+            'invoice_image' => $invoiceImagePath,
+        ]);
 
-                    Image::create([
-                        'claim_id' => $createClaim->id,  // Link the image to the claim
-                        'defect_image' => $path,
-                    ]);
-                }
+        if ($request->hasFile('defect_image')) {
+            foreach ($request->file('defect_image') as $image) {
+                $path = $image->store('images', 'public');
+
+                Image::create([
+                    'claim_id' => $claim->id,
+                    'defect_image' => $path,
+                ]);
             }
-           
-        // // Store each uploaded image
-        
-       
-            if (!$createClaim->id) {
-                DB::rollBack();
-                return redirect()->back()->with('errors',$createClaim);
-            }
-
-          
-            DB::commit();
-            session()->flash('success', 'New Claim has been created successfully !');
-            return redirect()->route('claim.index');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('errors',$e);
         }
+
+        DB::commit();
+        return redirect()->route('claim.index')->with('success', 'New Claim has been created successfully!');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => $e->getMessage()])->withInput();
     }
-    
+}
+ 
     /**
      * Show the form for editing the specified resource.
      *
@@ -229,7 +232,18 @@ class ClaimController extends Controller
             'article_number' => 'required',
             'name' => 'required',
             'invoice' => 'required',
-            'purchase_date' => 'required',
+            'purchase_date' =>  [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $purchaseDate = Carbon::parse($value);
+                    $now = Carbon::now();
+        
+                    if ($purchaseDate->lt($now->subDays(30))) {
+                        $fail("The Purchase Date of invoice must be within the last 30 days.");
+                    }
+                },
+            ],
             'article_price' => 'required',
             'period' => 'required',
             'customer_name' => 'required',
@@ -237,6 +251,7 @@ class ClaimController extends Controller
             'customer_email' => 'required',
             'ptcl_number' => 'required',
             'cell' => 'required',
+			'shop_manager' => 'required',
             'shop_id' => 'required',
         ]);
        
@@ -269,6 +284,7 @@ class ClaimController extends Controller
                 'customer_email' => $request->customer_email,
                 'ptcl_number' => $request->ptcl_number,
                 'cell' => $request->cell,
+				'shop_manager'=>$request->shop_manager,
                 'shop_id' => $request->shop_id,
                 'proposed_status' => $request->proposed_status,
                 'color' => $request->color,
@@ -312,5 +328,44 @@ class ClaimController extends Controller
 
 
     }
+	  public function locallyClosed($id){
+        $claim=Claim::find($id);
+        return view('claims.locally-closed',compact('claim'));
+    }
+    public function locallyClosedClaim(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => $request->status,
+            'message' => $request->message,
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $claim = Claim::find($request->claimId);
+            $claim->update([
+				'status' => 6,
+                'is_closed' => $request->status,
+                'message' => $request->message,             
+            ]);
+            DB::commit();
+            session()->flash('success', 'Claim has been Submitted successfully !');
+            return redirect()->route('claim.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('errors',$e);
+        }
+
+
+    }
+	    public function getClaimById($id)
+{
+    $claim = Claim::with('shops')->find($id);
+
+    if (!$claim) {
+        return response()->json(['message' => 'Claim not found'], 404);
+    }
+
+    return response()->json($claim);
+}
 
 }

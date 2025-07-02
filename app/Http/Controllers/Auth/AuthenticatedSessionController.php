@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+		
+		    $user = Auth::user();
+    $user->remember_token = \Illuminate\Support\Str::random(60);
+    $user->save();
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

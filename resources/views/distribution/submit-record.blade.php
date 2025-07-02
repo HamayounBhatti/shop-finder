@@ -13,8 +13,8 @@
         @method('PUT')
           <input type="hidden" id="claimId" name="claimId" value="{{$claim->id}}" />
           <div class="form-group">
-            <label for="name" class="col-form-label">Name:</label>
-            <input type="text" name="claimName" class="form-control" id="claimName" value="{{$claim->name}}">
+            <label for="name" class="col-form-label">Aritcle Name:</label>
+            <input type="text" name="claimName" class="form-control" id="claimName" value="{{$claim->name}}" disabled>
           </div>
           <div class="form-group">
             <label for="message" class="col-form-label">Message:</label>
@@ -24,7 +24,7 @@
             <div class="col-12 mt-2 row">
               <div class="col-6">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="status" id="gridRadios1" value="4" checked>
+                  <input class="form-check-input" type="radio" name="status" id="gridRadios1" value="{{$claim->status}}" checked>
                   <label class="form-check-label" for="gridRadios1">
                     Closed
                   </label>

@@ -20,7 +20,7 @@ class ShopController extends Controller
 {
     public function index()
     {
-        $shops = Shop::all();
+        $shops = Shop::paginate(5);
         return view('shop.index',compact('shops'));
     }
 
@@ -70,7 +70,6 @@ class ShopController extends Controller
             session()->flash('success', 'New Shop has been created successfully !');
             return redirect()->route('shop.index');
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
             return redirect()->back()->with('errors',$e);
         }
