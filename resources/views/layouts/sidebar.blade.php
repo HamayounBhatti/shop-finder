@@ -19,7 +19,7 @@
     @if(Auth::user()->hasPermission('reports'))
 
     <div style="font-weight:bolder; color:black">Reports Management</div>
-    <a class="sidebar-links {{ Route::currentRouteName() == 'report.monthly' ? 'active' : '' }}" href="{{route('report.monthly')}}">Monthly</a>
+    <a class="sidebar-links {{ Route::currentRouteName() == 'report.custom-report.form' ? 'active' : '' }}" href="{{route('report.custom-report.form')}}">Customized Report</a>
     @endif
 	@if(Auth::user()->hasPermission('roles-permissions-shops'))
 
