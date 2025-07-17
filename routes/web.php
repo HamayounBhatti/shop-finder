@@ -148,13 +148,18 @@ Route::middleware(['auth','has_permission:roles-permissions-shops'])->group(func
         /* Route User */
         });  
     });
-    // Route Distribution Page  
+    // Route Reports Pages
     Route::middleware(['auth','has_permission:reports'])->group(function () {	
         Route::group(['prefix' => 'report', 'name' => 'report.', 'as' => 'report.'], function () {
+            // Monthly Reports
             Route::get('/monthly-report-form', [ReportController::class, 'monthlyReport'])->name('monthly');
             Route::post('/monthly-report', [ReportController::class, 'generateMonthlyReport'])->name('monthly-report.generate');
             Route::get('/monthly-report/export', [ReportController::class, 'exportMonthlyReport'])->name('monthly.export');
             Route::get('/monthly-report/{month}', [ReportController::class, 'generateMonthlyReport'])->name('monthly-report.get');
+            // Custom Date Range Reports
+            Route::get('/custom', [ReportController::class, 'customReportForm'])->name('custom-report.form');
+            Route::post('/custom/generate', [ReportController::class, 'generateCustomReport'])->name('custom-report.generate');
+            Route::post('/custom/export', [ReportController::class, 'exportCustomReport'])->name('custom-report.export');
             // Route::get('/yearly-report', [ReportController::class, 'yearlyReport'])->name('report.yearly');
             // Route::get('/yearly-report/export', [ReportController::class, 'exportYearlyReport'])->name('report.yearly.export');
         });

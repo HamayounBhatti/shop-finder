@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MonthlyClaimsExport;
+use App\Exports\CustomClaimsExport;
 
 class ReportController extends Controller
 {
@@ -99,4 +100,76 @@ class ReportController extends Controller
         
         return Excel::download(new MonthlyClaimsExport($month), $filename);
     }
+
+    // Custom Dates Code For Monthly Report Start
+
+    public function customReportForm()
+    {
+        // Default to current month range
+        $startDate = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $endDate = Carbon::now()->endOfMonth()->format('Y-m-d');
+        
+        return view('reports.custom-report-form', compact('startDate', 'endDate'));
+    }
+
+    public function generateCustomReport(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after_or_equal:start_date',
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+        
+        $startDate = Carbon::parse($request->start_date)->startOfDay();
+        $endDate = Carbon::parse($request->end_date)->endOfDay();
+        
+        // Base query with role-based filters
+        $query = Claim::whereBetween('created_at', [$startDate, $endDate])
+                    ->orderBy('created_at');
+        
+        // Apply role-based filters
+        if (Auth::user()->role->name == 'Shop') {
+            $query->where('shop_id', Auth::user()->shop_id);
+        }
+        
+        $query->whereHas('shops', function($query) {
+            $query->where('is_active', 1);
+        });
+        
+        $claims = $query->with('shops')->get();
+        
+        return view('reports.custom-report-view', [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'claims' => $claims,
+            'totalClaims' => $claims->count(),
+            'pendingClaims' => $claims->where('status', 0)->count(),
+            'submittedClaims' => $claims->where('status', 1)->count(),
+            'rejectedClaims' => $claims->where('status', 2)->count(),
+            'reparingClaims' => $claims->where('status', 3)->count(),
+            'replacingClaims' => $claims->where('status', 4)->count(),
+            'receivedClaims' => $claims->where('status', 5)->count(),
+            'locallyClosedClaims' => $claims->where('status', 6)->count(),
+        ]);
+    }
+
+    public function exportCustomReport(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after_or_equal:start_date',
+        ]);
+        
+        $startDate = Carbon::parse($request->start_date);
+        $endDate = Carbon::parse($request->end_date);
+        
+        $filename = 'claims-report-' . $startDate->format('Y-m-d') . '-to-' . $endDate->format('Y-m-d') . '.xlsx';
+        
+        return Excel::download(new CustomClaimsExport($startDate, $endDate), $filename);
+    }
+
+    // Custom Dates Code For Monthly Report End 
 }
